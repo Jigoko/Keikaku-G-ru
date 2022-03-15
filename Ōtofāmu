@@ -37,7 +37,7 @@ b:Slider("Npc Maxiumum Level",{
     maxlvl = value
 end)
 b:Slider("Distance from Npc",{
-    min = 5; -- min value of the slider
+    min = 3; -- min value of the slider
     max = 14; -- max value of the slider
     precise = true; -- max 2 decimals
 },function(value)
@@ -121,10 +121,10 @@ function kill()
     
     repeat
         tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((plr.Character.HumanoidRootPart.Position - Target[1][3]:FindFirstChild("HumanoidRootPart").Position).magnitude/Speed), Enum.EasingStyle.Linear)
-        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = Target[1][3].HumanoidRootPart.CFrame + (Target[1][3].HumanoidRootPart.CFrame.lookVector * -12)})
+        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = Target[1][3].HumanoidRootPart.CFrame + (Target[1][3].HumanoidRootPart.CFrame.lookVector * -distance)})
         tween:Play()
         VIM:SendKeyEvent(true, "Space", false, game)
-        if (plr.Character.HumanoidRootPart.Position - Target[1][3]:FindFirstChild("HumanoidRootPart").Position).magnitude > 10 then
+        if (plr.Character.HumanoidRootPart.Position - Target[1][3]:FindFirstChild("HumanoidRootPart").Position).magnitude > (distance+5) then
             tween.Completed:Wait()
         else
             task.wait()
