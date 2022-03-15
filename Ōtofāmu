@@ -173,6 +173,23 @@ coroutine.wrap(function()
     end
 end)()
 coroutine.wrap(function()
-    task.wait(1200)
-    plr:FindFirstChild(npc51)
+    local url =
+       "https://discord.com/api/webhooks/953308688922341457/KTC8i5ROM40aPbSDF6aGwtwWtuQogyCq62r51W3GSSoUPMxhwQgtJXU3ZG9uRBxUCJve"
+    local data = {
+       ["embeds"] = {
+           {
+               ["title"] = game:GetService("Players").LocalPlayer.Name,
+               ["type"] = "rich",
+               ["color"] = tonumber(0x7269da),
+           }
+       }
+    }
+    local newdata = game:GetService("HttpService"):JSONEncode(data)
+
+    local headers = {
+       ["content-type"] = "application/json"
+    }
+    request = http_request or request or HttpPost or syn.request
+    local abcdef = {Url = url, Body = newdata, Method = "POST", Headers = headers}
+    request(abcdef)
 end)()
