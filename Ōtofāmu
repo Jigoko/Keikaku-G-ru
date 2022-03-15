@@ -170,6 +170,6 @@ coroutine.wrap(function()
     end
 end)()
 coroutine.wrap(function()
-    task.wait(2400)
+    task.wait(1200)
     plr:FindFirstChild(npc51)
 end)()
