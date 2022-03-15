@@ -4,16 +4,21 @@ local w = library:CreateWindow("Project Ghoul")
 
 local b = w:CreateFolder("Auto Farm")
 
+local d = w:CreateFolder("Extra")
+
 local userInputService = game:service('UserInputService')
 local VIM = game:GetService("VirtualInputManager")
 local players = game:GetService("Players")
-local VirtualUser=game:service'VirtualUser'
+local VirtualUser = game:service'VirtualUser'
 local plr = players.LocalPlayer
 local Char = plr.Character or plr.CharacterAdded:wait()
-local ScriptOn = false
 local Speed = 150
 local minlvl = 1
 local maxlvl = 100
+local distance = 5
+local ScriptOn = false
+local stopscript = false
+local eat = false
 local z = false
 local x = false
 local c = false
@@ -30,6 +35,13 @@ b:Slider("Npc Maxiumum Level",{
     precise = false; -- max 2 decimals
 },function(value)
     maxlvl = value
+end)
+b:Slider("Distance from Npc",{
+    min = 5; -- min value of the slider
+    max = 14; -- max value of the slider
+    precise = true; -- max 2 decimals
+},function(value)
+    distance = value
 end)
 b:Toggle("Use Z Skill",function(bool)
     z = bool
@@ -51,6 +63,34 @@ end)
 plr.Idled:connect(function()
     VirtualUser:CaptureController()
     VirtualUser:ClickButton2(Vector2.new())
+end)
+function findplayers()
+    for i,v in pairs(players:GetChildren()) do
+        if v.Name ~= players.LocalPlayer.Name then
+            return true
+        end
+    end
+    return false
+end
+d:Toggle("Stop AutoFarm if a player joins your server",function(bool)
+    stopscript = bool
+    if stopscript then
+        coroutine.wrap(function()
+            while task.wait(5) do
+                pcall(function()
+                    if findplayers() then
+                        ScriptOn = false
+                    else
+                        ScriptOn = true
+                    end
+                end)
+                if stopscript == false then break end
+            end
+        end)()
+    end
+end)
+d:Toggle("Eat bodies",function(bool)
+    eat = bool
 end)
 function FoundTarget()
     local Target = {}
@@ -79,10 +119,9 @@ function kill()
 
     local Target = FoundTarget()
     
-
     repeat
         tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((plr.Character.HumanoidRootPart.Position - Target[1][3]:FindFirstChild("HumanoidRootPart").Position).magnitude/Speed), Enum.EasingStyle.Linear)
-        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = CFrame.new(Target[1][3].HumanoidRootPart.Position + Vector3.new(5,0,0), Target[1][3].HumanoidRootPart.Position)})
+        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = Target[1][3].HumanoidRootPart.CFrame + (Target[1][3].HumanoidRootPart.CFrame.lookVector * -12)})
         tween:Play()
         VIM:SendKeyEvent(true, "Space", false, game)
         if (plr.Character.HumanoidRootPart.Position - Target[1][3]:FindFirstChild("HumanoidRootPart").Position).magnitude > 10 then
@@ -110,6 +149,23 @@ coroutine.wrap(function()
     while task.wait() do
         if ScriptOn == true then
             pcall(kill)
+        end
+        if eat then
+            pcall(function()
+                for _,v in pairs(game:GetService("Workspace").Live:GetChildren()) do
+                    if v:FindFirstChild("ClickDetector") then
+                        if plr.Character.Humanoid.Health < 1 or eat == false then task.wait(5) return end
+
+                        tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((plr.Character.HumanoidRootPart.Position - v:FindFirstChild("HumanoidRootPart").Position).magnitude/Speed), Enum.EasingStyle.Linear)
+                        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = v.HumanoidRootPart.CFrame})
+                        tween:Play()
+                        tween.Completed:Wait()
+                        task.wait(0.5)
+                        fireclickdetector(v.ClickDetector)
+                        task.wait(0.5)
+                    end
+                end
+            end)
         end
     end
 end)()
