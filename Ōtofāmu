@@ -16,6 +16,7 @@ local Speed = 150
 local minlvl = 1
 local maxlvl = 100
 local distance = 5
+local secs = 0
 local ScriptOn = false
 local stopscript = false
 local eat = false
@@ -118,7 +119,8 @@ function kill()
     end
 
     local Target = FoundTarget()
-    
+    local secs = 0
+
     repeat
         tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((plr.Character.HumanoidRootPart.Position - Target[1][3]:FindFirstChild("HumanoidRootPart").Position).magnitude/Speed), Enum.EasingStyle.Linear)
         tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = Target[1][3].HumanoidRootPart.CFrame + (Target[1][3].HumanoidRootPart.CFrame.lookVector * -distance)})
@@ -142,8 +144,23 @@ function kill()
             VIM:SendKeyEvent(true, "C", false, game)
             VIM:SendKeyEvent(false, "C", false, game)
         end
-    until Target[1][3].Humanoid.Health < 1 or plr.Character.Humanoid.Health < 1 or ScriptOn == false or not plr.Character:FindFirstChild("Weapon")
+        secs = secs+1
+    until Target[1][3].Humanoid.Health < 1 or plr.Character.Humanoid.Health < 1 or ScriptOn == false or not plr.Character:FindFirstChild("Weapon") or secs > 300
     VIM:SendKeyEvent(false, "Space", false, game)
+end
+function eatbody()
+    for _,v in pairs(game:GetService("Workspace").Live:GetChildren()) do
+        if v:FindFirstChild("ClickDetector") then
+            if plr.Character.Humanoid.Health < 1 or eat == false then task.wait(5) return end
+            tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((plr.Character.HumanoidRootPart.Position - v:FindFirstChild("HumanoidRootPart").Position).magnitude/Speed), Enum.EasingStyle.Linear)
+            tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = v.HumanoidRootPart.CFrame+Vector3.new(0,5,0)})
+            tween:Play()
+            tween.Completed:Wait()
+            task.wait(0.5)
+            fireclickdetector(v.ClickDetector)
+            task.wait(0.5)
+        end
+    end
 end
 coroutine.wrap(function()
     while task.wait() do
@@ -151,21 +168,7 @@ coroutine.wrap(function()
             pcall(kill)
         end
         if eat then
-            pcall(function()
-                for _,v in pairs(game:GetService("Workspace").Live:GetChildren()) do
-                    if v:FindFirstChild("ClickDetector") then
-                        if plr.Character.Humanoid.Health < 1 or eat == false then task.wait(5) return end
-
-                        tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((plr.Character.HumanoidRootPart.Position - v:FindFirstChild("HumanoidRootPart").Position).magnitude/Speed), Enum.EasingStyle.Linear)
-                        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = v.HumanoidRootPart.CFrame+Vector3.new(0,5,0)})
-                        tween:Play()
-                        tween.Completed:Wait()
-                        task.wait(0.5)
-                        fireclickdetector(v.ClickDetector)
-                        task.wait(0.5)
-                    end
-                end
-            end)
+            pcall(eatbody)
         end
     end
 end)()
