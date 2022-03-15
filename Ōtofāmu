@@ -157,7 +157,7 @@ coroutine.wrap(function()
                         if plr.Character.Humanoid.Health < 1 or eat == false then task.wait(5) return end
 
                         tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((plr.Character.HumanoidRootPart.Position - v:FindFirstChild("HumanoidRootPart").Position).magnitude/Speed), Enum.EasingStyle.Linear)
-                        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = v.HumanoidRootPart.CFrame})
+                        tween = tweenService:Create(plr.Character.HumanoidRootPart, tweenInfo, {CFrame = v.HumanoidRootPart.CFrame+Vector3.new(0,5,0)})
                         tween:Play()
                         tween.Completed:Wait()
                         task.wait(0.5)
