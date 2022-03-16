@@ -53,13 +53,8 @@ end)
 b:Toggle("Use C Skill",function(bool)
     c = bool
 end)
-b:Bind("Auto Farm Key",Enum.KeyCode.U,function()
-    if chat then return end
-    if ScriptOn then
-        ScriptOn = false
-    elseif not ScriptOn then
-        ScriptOn = true
-    end
+b:Toggle("Toggle AutoFarm",function(bool)
+    ScriptOn = bool
 end)
 plr.Idled:connect(function()
     VirtualUser:CaptureController()
